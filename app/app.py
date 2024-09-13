@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import os
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 import requests
 from build_vector_db import pdf_to_vector_db, public_to_vector_db
 from ExtractLink import ExtractLink

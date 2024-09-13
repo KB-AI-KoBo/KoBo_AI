@@ -1,6 +1,6 @@
 import fitz
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
 from preprocessing_Json import process_json_to_documents

@@ -1,7 +1,7 @@
 # import library
 from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
 from langchain.tools import Tool
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from typing import List, Dict
 from langchain.prompts import MessagesPlaceholder
 from AgentState import AgentState

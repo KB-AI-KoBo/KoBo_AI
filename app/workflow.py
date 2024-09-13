@@ -2,7 +2,7 @@ from langgraph.graph import StateGraph, END
 from AgentState import AgentState
 from nodes import agent, input_retrieve, db_retrieve, combiner, generate, rewrite
 from edges import which_retrieved, grade_documents, should_continue
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 
 
 # workflow function for LangGraph

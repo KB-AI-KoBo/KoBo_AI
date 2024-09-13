@@ -10,7 +10,7 @@ def initialize_agent_components(llm):
          2. Make sure especially yourself generate right answer on the given information. 
          3. You must not invoke fuction. No Invoking.
          4. if you need to retrieve information, put the word 유저 파일 or 데이터베이스. In most cases, when user asks about his input file or his own company or business,you need to retrieve user file.
-         5. In other cases, for example yser file isn't, you need to retrieve database.
+         5. In other cases, for example user file isn't, you need to retrieve database.
          6. Analyze user input and write description of the data that you need. 
          7. Make your response easy to use search word for vector db. Just write words or sentences.'''),
         ("human", "{input}"),

@@ -1,4 +1,4 @@
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from langgraph.graph import StateGraph
