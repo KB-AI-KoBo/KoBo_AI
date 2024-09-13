@@ -2,11 +2,11 @@ from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import os
 from langchain_community.chat_models import ChatOpenAI
+from agent_components import initialize_agent_components
 import requests
 from build_vector_db import pdf_to_vector_db, public_to_vector_db
 from ExtractLink import ExtractLink
 from workflow import run_workflow, extract_final_response
-import time
 from flask_cors import CORS
 from ratelimit import limits, sleep_and_retry
 
@@ -27,7 +27,8 @@ supporting_db = public_to_vector_db()
 
 # LLM 초기화
 llm = ChatOpenAI(temperature=0.5, model='gpt-4', openai_api_key=openai_api_key)
-
+# agent_components 초기화
+agent_components = initialize_agent_components(llm)
 @app.route('/', methods=['POST'])
 def process_request():
     try:

@@ -3,13 +3,8 @@ from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
 from langchain.tools import Tool
 from langchain_community.vectorstores import FAISS
 from typing import List, Dict
-from langchain.prompts import MessagesPlaceholder
 from AgentState import AgentState
 from typing import List, Dict, Any
-from langchain_experimental.utilities import PythonREPL
-import matplotlib.pyplot as plt
-import base64
-import io
 
 # 1. agent node
 def agent(state):
@@ -81,7 +76,7 @@ def combiner(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
 def rewrite(state):
     combined_result = state.get('combined_result', [])
     combined_text = " ".join([doc.page_content for doc in combined_result])
-    llm = state['llm']
+
     agent_components = state.get('agent_components', None)
     if not agent_components:
         raise ValueError("agent_components not found in state")
@@ -102,8 +97,6 @@ def rewrite(state):
 def generate(state):
     combined_result = state.get('combined_result', [])
     combined_text = ' '.join(doc.page_content for doc in combined_result)
-
-    llm = state['llm']
     agent_components = state.get('agent_components', None)
     if not agent_components:
         raise ValueError("agent_components not found in state")
