@@ -7,7 +7,7 @@ from langchain.chat_models import ChatOpenAI
 
 # workflow function for LangGraph
 # we need these variables to run this function.
-def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, llm):
+def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, llm, agent_components):
     
     # define StateGraph
     workflow = StateGraph(AgentState)
@@ -68,7 +68,8 @@ def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, l
         "agent_response":"",
         "pdf_db": pdf_db,
         "supporting_db": supporting_db,
-        "llm" : llm
+        "llm" : llm,
+        "agent_components": agent_components
     }
     result = app.invoke(initial_state)
     return result

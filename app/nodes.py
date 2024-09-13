@@ -1,5 +1,4 @@
 # import library
-from langchain.prompts import ChatPromptTemplate
 from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
 from langchain.tools import Tool
 from langchain.vectorstores import FAISS
@@ -12,27 +11,15 @@ import matplotlib.pyplot as plt
 import base64
 import io
 
-
 # 1. agent node
 def agent(state):
 
     llm = state['llm']
+    agent_components = state.get('agent_components', None)
+    if not agent_components:
+        raise ValueError("agent_components not found in state")
 
-    # ChatPromptTemplate을 이용, 답변 생성에 필요한 다양한 프롬프트를 입력함과 동시에 agent가 상호작용하며 작동할 수 있게 함
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", '''You are an AI assistant helping small business with financial information retrieval and generation. 
-         1. Please Answer in Korean. 
-         2. Make sure especially yourself generate right answer on the given information. 
-         3. You must not invoke fuction. No Invoking.
-         4. if you need to retrieve information, put the word 유저 파일 or 데이터베이스. In most cases, when user asks about his input file or his own company or business,you need to retrieve user file.
-         5. In other cases, for example yser file isn't, you need to retrieve database.
-         6. Analyze user input and write description of the data that you need. 
-         7. Make your response easy to use search word for vector db. Just write words or sentences.'''),
-        ("human", "{input}"),
-        ("ai", "I understand. I'll determine the best course of action."),
-        ("human", "Great, what do you think we should do next?"),
-        MessagesPlaceholder(variable_name="agent_scratchpad")
-    ])
+    base_prompt = agent_components["base_prompt"]
 
     # agent가 이용할 도구 정의
     tools = [
@@ -40,7 +27,7 @@ def agent(state):
         Tool(name="db_retrieve", func=db_retrieve, description="Retrieve information from the database"),
     ]
     # agent 정의
-    agent = OpenAIFunctionsAgent(llm=llm, prompt=prompt, tools=tools)
+    agent = OpenAIFunctionsAgent(llm=llm, prompt=base_prompt, tools=tools)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     response = agent_executor.run(state['input'])
     return {"agent_response": response}
@@ -91,42 +78,42 @@ def combiner(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
 
 # 6 . rewrite node
 # 그래프를 한번 더 순환하게 될 때, 질문을 검색한 텍스트를 이용해 증강해주는 agent node
-def rewrite(state: AgentState) -> Dict[str, str]:
+def rewrite(state):
     combined_result = state.get('combined_result', [])
     combined_text = " ".join([doc.page_content for doc in combined_result])
     llm = state['llm']
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", '''You are an AI assistant that rewrites question from the user for AI agent to make the answer more accurate and perfect.
-                      Write the subtle question based on given information.
-                      And please write description about data that agent needs to find.'''),
-        ("human", "Please rewrite the following information: {context}, question:{input}, AI answer:{answer}"),
-    ])
-    chain = prompt | llm.bind(temperature = 0.5)
-    rewritten_info = chain.invoke({"input": state['input'], "context":combined_text,"answer":state["generated_answer"]})
+    agent_components = state.get('agent_components', None)
+    if not agent_components:
+        raise ValueError("agent_components not found in state")
+    rewrite_chain = agent_components['rewrite_chain']
+    
+    rewritten_info = rewrite_chain.invoke({
+        "input": state['input'],
+        "context": combined_text,
+        "answer": state["generated_answer"]
+    })
+    
     return {"input": rewritten_info.content}
 
 
 
 # 7. generate node
 # 사용자를 위한 답변을 생성하는 agent node
-def generate(state: AgentState) -> Dict[str, str]:
+def generate(state):
     combined_result = state.get('combined_result', [])
     combined_text = ' '.join(doc.page_content for doc in combined_result)
 
     llm = state['llm']
+    agent_components = state.get('agent_components', None)
+    if not agent_components:
+        raise ValueError("agent_components not found in state")
+    generate_chain = agent_components['generate_chain']
     
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", '''You are an AI assistant that generates the answer based on given context. 
-                      Please write in Korean. Answer logically and avoid writing false information'''),
-        ("human", '''Using the following information, generate a comprehensive response on the question.
-                    구체적인 수치를 인용하며 서술해라. 지원 사업 데이터에 링크가 있다면 참조해줘.
-                    기록번호나 날짜는 제외해서 서술해도 돼.
-                    your job is not drawing graph. Only describe it.
-                information:{context}, question: {query}, agent_response : {agent_response}'''),
-    ])
+    generated_info = generate_chain.invoke({
+        "context": combined_text,
+        "query": state.get('input'),
+        "agent_response": state.get('agent_response', [])
+    })
     
-    chain = prompt | llm.bind(temperature = 0.7)
-   
-    generated_info = chain.invoke({"context": combined_text, "query":state.get('input'), "agent_response":state.get('agent_response', [])}) 
     return {"generated_answer": generated_info.content}
 

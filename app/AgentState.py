@@ -23,4 +23,4 @@ class AgentState(TypedDict):
     combined_result: Optional[List[Dict[str, Any]]]  # 결합된 결과 문서 리스트
     generated_answer: str
     llm : ChatOpenAI
-    graph_data: base64
+    agent_components: Dict[str, Any]
