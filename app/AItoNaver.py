@@ -1,5 +1,4 @@
 import os
-import sys
 import urllib.request
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.prompts import MessagesPlaceholder
@@ -21,8 +20,8 @@ test_prompt = ChatPromptTemplate.from_messages([
 llm = ChatOpenAI(temperature=0.5, model='gpt-4o', openai_api_key=openai_api_key)
 
 test_chain = test_prompt | llm.bind(temperature=0.5)
-client_id = "VZqunGuAjPeTN1rIL10z"
-client_secret="XQ6HSwgKi4"
+client_id = os.getenv("CLIENT_ID")
+client_secret= os.getenv("CLIENT_SECRET")
 response = test_chain.invoke({"input":'롯데마트의 최근 주력 사업이 궁금해'})
 test_input = str(response.content)
 print(test_input)
