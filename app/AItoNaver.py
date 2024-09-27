@@ -1,7 +1,6 @@
 import os
 import urllib.request
-from langchain.prompts import ChatPromptTemplate, PromptTemplate
-from langchain.prompts import MessagesPlaceholder
+from langchain.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
