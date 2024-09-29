@@ -8,7 +8,6 @@ from build_vector_db import pdf_to_vector_db, public_to_vector_db
 from ExtractLink import ExtractLink
 from workflow import run_workflow, extract_final_response
 from flask_cors import CORS
-from ratelimit import limits, sleep_and_retry
 
 # Flask 앱 초기화
 app = Flask(__name__)

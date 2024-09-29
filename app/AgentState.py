@@ -16,6 +16,7 @@ class AgentState(TypedDict):
     pdf_db: FAISS | None
     supporting_db: FAISS
     agent_response: str  # 에이전트 응답
+    naver_docs: Optional[List[Dict[str, Any]]]
     retrieved_docs: Optional[List[Dict[str, Any]]]  # 검색된 문서 리스트
     db_docs: Optional[List[Dict[str, Any]]]  # DB에서 검색된 문서 리스트
     combined_result: Optional[List[Dict[str, Any]]]  # 결합된 결과 문서 리스트

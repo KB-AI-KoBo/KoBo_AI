@@ -2,11 +2,6 @@ import fitz
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from dotenv import load_dotenv
-from preprocessing_Json import process_json_to_documents
-import requests
-import certifi
-import os
 from langchain_community.document_loaders.csv_loader import CSVLoader
 
 # user가 업로드한 pdf 파일을 vector database에 업로드

@@ -10,7 +10,8 @@ def which_retrieved(state: AgentState) -> str:
     agent_response = state.get('agent_response', '').lower()
     if "유저 파일" in agent_response: return "user_file"
     elif "데이터베이스" in agent_response: return "db"
-    else: return "user_file"  # default
+    elif("검색 엔진") in agent_response : return "search engine"
+    else: return "search engine"  # default
 
 
 # generated_answer를 다시 작성할지 질문과 답변을 기반으로 판단

@@ -7,12 +7,15 @@ def initialize_agent_components(llm):
     base_prompt = ChatPromptTemplate.from_messages([
         ("system", '''You are an AI assistant helping small business with financial information retrieval and generation. 
          1. Please Answer in Korean. 
-         2. Make sure especially yourself generate right answer on the given information. 
+         2. Make sure especially yourself write right answer on the given information. 
          3. You must not invoke fuction. No Invoking.
-         4. if you need to retrieve information, put the word 유저 파일 or 데이터베이스. In most cases, when user asks about his input file or his own company or business,you need to retrieve user file.
-         5. In other cases, for example user file isn't, you need to retrieve database.
-         6. Analyze user input and write description of the data that you need. 
-         7. Make your response easy to use search word for vector db. Just write words or sentences.'''),
+         4. There are three methods for searching information: searching the user file, querying the database, or using a search API.
+            Use the user file when the user asks about their company or their file. In this case, print the string '유저 파일'.
+            Use the database when the user inquires about SME (Small and Medium Enterprises) support programs. In this case, print the string '데이터베이스'.
+            Finally, use the search API for real-time information or data that is unlikely to be found in the other two methods. Print the string '검색엔진'.
+         5. Analyze user input and write description of the data that you need. 
+         6. For efficient searching, add [[ at the beginning and ]] at the end of the content to be searched.
+         7. Make your response easy to use search word for vector db or search engine. Just write words or sentences.'''),
         ("human", "{input}"),
         ("ai", "I understand. I'll determine the best course of action."),
         ("human", "Great, what do you think we should do next?"),
@@ -30,7 +33,7 @@ def initialize_agent_components(llm):
         ("system", '''You are an AI assistant that generates the answer based on given context. 
                       Please write in Korean. Answer logically and avoid writing false information'''),
         ("human", '''Using the following information, generate a comprehensive response on the question.
-                    구체적인 수치를 인용하며 서술해라. 지원 사업 데이터에 링크가 있다면 참조해줘.
+                    구체적인 수치를 인용하며 서술해라. 지원 사업 데이터나 뉴스에 링크가 있다면 참조해줘.
                     기록번호나 날짜는 제외해서 서술해도 돼.
                 information:{context}, question: {query}, agent_response : {agent_response}''')
     ])

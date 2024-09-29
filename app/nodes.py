@@ -5,7 +5,8 @@ from langchain_community.vectorstores import FAISS
 from typing import List, Dict
 from AgentState import AgentState
 from typing import List, Dict, Any
-
+import urllib.request
+from tools import extract_content
 # 1. agent node
 def agent(state):
 
@@ -27,6 +28,28 @@ def agent(state):
     response = agent_executor.run(state['input'])
     return {"agent_response": response}
 
+def naver_retrieve(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
+    print("enter the naver engine")
+    client_id = "VZqunGuAjPeTN1rIL10z"
+    client_secret="XQ6HSwgKi4"
+    agent_response = state.get('agent_response', '')
+    words_for_searching = extract_content(agent_response)
+    print(words_for_searching)
+    encText = urllib.parse.quote(words_for_searching)
+
+    url = 'https://openapi.naver.com/v1/search/news?query='+ encText
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-id",client_id)
+    request.add_header("X-Naver-Client-Secret", client_secret)
+    response = urllib.request.urlopen(request)
+    rescode = response.getcode()
+    if(rescode==200):
+        response_body = response.read()
+        search_response = response_body.decode('utf-8')
+        return {"naver_docs": search_response}
+    else:
+        print("Error Code:" + rescode)
+
 # 2. user's input retrieve node
 def input_retrieve(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
     # 입력이 dict 타입이 아닌 경우 예외 처리
@@ -43,10 +66,10 @@ def input_retrieve(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
 
     # agent_response 가져오기
     agent_response = state.get('agent_response', '').lower()
-
+    words_for_searching = extract_content(agent_response)
     # retriever 설정 및 문서 검색
     retriever = vectorstore.as_retriever(k=7)
-    docs = retriever.invoke(agent_response)
+    docs = retriever.invoke(words_for_searching)
     print("PDF retrieved and ready")
     
     return {"retrieved_docs": docs}
@@ -57,9 +80,10 @@ def db_retrieve(state: AgentState) -> Dict[str, List[Dict[str, Any]]] :
         raise TypeError(f"Expected state to be a dict or have a 'get' method, but got {type(state)}")
     supporting_db = state.get('supporting_db', FAISS)
     agent_response = state.get('agent_response', '').lower()
+    words_for_searching = extract_content(agent_response)
     retriever = supporting_db.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold":0.5}, k=8)
-    
-    docs = retriever.invoke(agent_response)
+
+    docs = retriever.invoke(words_for_searching)
     return {"db_docs": docs}
 
 # 5. combiner node
@@ -97,13 +121,14 @@ def rewrite(state):
 def generate(state):
     combined_result = state.get('combined_result', [])
     combined_text = ' '.join(doc.page_content for doc in combined_result)
+    naver_text = state.get('naver_docs')
     agent_components = state.get('agent_components', None)
     if not agent_components:
         raise ValueError("agent_components not found in state")
     generate_chain = agent_components['generate_chain']
     
     generated_info = generate_chain.invoke({
-        "context": combined_text,
+        "context": combined_text + naver_text,
         "query": state.get('input'),
         "agent_response": state.get('agent_response', [])
     })

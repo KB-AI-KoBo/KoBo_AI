@@ -1,5 +1,3 @@
-import os
-import sys
 import urllib.request
 client_id = "VZqunGuAjPeTN1rIL10z"
 client_secret="XQ6HSwgKi4"

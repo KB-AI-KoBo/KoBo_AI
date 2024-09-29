@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, END
 from AgentState import AgentState
-from nodes import agent, input_retrieve, db_retrieve, combiner, generate, rewrite
+from nodes import agent, naver_retrieve, input_retrieve, db_retrieve, combiner, generate, rewrite
 from edges import which_retrieved, grade_documents, should_continue
 
 # workflow function for LangGraph
@@ -12,6 +12,7 @@ def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, l
     
     # add nodes
     workflow.add_node("agent", agent)
+    workflow.add_node("naver_retrieve", naver_retrieve)
     workflow.add_node("input_retrieve", input_retrieve)
     workflow.add_node("db_retrieve", db_retrieve)
     workflow.add_node("combiner", combiner)
@@ -26,14 +27,15 @@ def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, l
         which_retrieved,
         {
             "user_file": "input_retrieve",
-            "db": "db_retrieve"
+            "db": "db_retrieve",
+            "search engine": "naver_retrieve"
         }
     )
     
     # combiner에 들어가야 양쪽 정보 모두 활용 가능
     workflow.add_edge("input_retrieve", "combiner")
     workflow.add_edge("db_retrieve", "combiner")
-
+    workflow.add_edge("naver_retrieve", "combiner")
     workflow.add_edge("combiner","generate")
     
     # evaluate generated_answer

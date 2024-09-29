@@ -1,7 +1,7 @@
 from workflow import run_workflow, extract_final_response
 from dotenv import load_dotenv
 import os
-from build_vector_db import pdf_to_vector_db, public_to_vector_db
+from build_vector_db import public_to_vector_db
 from agent_components import initialize_agent_components
 from langchain_openai import ChatOpenAI
 from ExtractLink import ExtractLink
