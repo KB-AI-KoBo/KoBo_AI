@@ -53,6 +53,10 @@ def grade_documents(state):
         grade = "no"
 
     print(f"---DECISION: DOCS {'GOOD' if grade == 'yes' else 'NOT ENOUGH'}---")
+
+    # history 저장 안 됨. trouble shooting 필요. 다른 자료형 이용하거나, search 통해 원인 정확히 파악할 것.
+    if grade == 'yes' :
+        state["history"] = state.get('history',[]).append({"query":question , "answer": generated_answer})
     return grade
 
 

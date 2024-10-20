@@ -10,23 +10,15 @@ from tools import extract_content
 # 1. agent node
 def agent(state):
 
-    llm = state['llm']
     agent_components = state.get('agent_components', None)
+    history = state.get('history', [])
     if not agent_components:
         raise ValueError("agent_components not found in state")
 
-    base_prompt = agent_components["base_prompt"]
-
-    # agent가 이용할 도구 정의
-    tools = [
-        Tool(name="input_retrieve", func=input_retrieve, description="Retrieve information from user-provided files"),
-        Tool(name="db_retrieve", func=db_retrieve, description="Retrieve information from the database"),
-    ]
-    # agent 정의
-    agent = OpenAIFunctionsAgent(llm=llm, prompt=base_prompt, tools=tools)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    response = agent_executor.run(state['input'])
-    return {"agent_response": response}
+    base_chain = agent_components["base_chain"]
+    response = base_chain.invoke({"input":state['input'], "history": history})
+    
+    return {"agent_response": response.content}
 
 def naver_retrieve(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
     print("enter the naver engine")

@@ -5,6 +5,7 @@ from typing import TypedDict, Sequence, List, Dict
 from langchain.schema import BaseMessage 
 from typing import Sequence, List, Dict, Optional, Any
 from langchain_community.chat_models import ChatOpenAI
+from collections import defaultdict
 
 # Agent가 각 node와 edge에 전달하기 위한 값을 저장하는 class
 class AgentState(TypedDict):
@@ -23,3 +24,4 @@ class AgentState(TypedDict):
     generated_answer: str
     llm : ChatOpenAI
     agent_components: Dict[str, Any]
+    histroy : List[Dict[str, str]]

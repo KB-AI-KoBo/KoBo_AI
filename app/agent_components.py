@@ -1,25 +1,28 @@
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.prompts import MessagesPlaceholder
+from datetime import datetime
 
 
 def initialize_agent_components(llm):
+    now = datetime.now()
+    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
     # Prompt 템플릿을 한 번만 초기화
     base_prompt = ChatPromptTemplate.from_messages([
-        ("system", '''You are an AI assistant helping small business with financial information retrieval and generation. 
+        ("system", f'''You are an AI assistant helping small business with financial information retrieval and generation. 
          1. Please Answer in Korean. 
          2. Make sure especially yourself write right answer on the given information. 
-         3. You must not invoke fuction. No Invoking.
-         4. There are three methods for searching information: searching the user file, querying the database, or using a search API.
+         3. There are three methods for searching information: searching the user file, querying the database, or using a search API.
             Use the user file when the user asks about their company or their file. In this case, print the string '유저 파일'.
             Use the database when the user inquires about SME (Small and Medium Enterprises) support programs. In this case, print the string '데이터베이스'.
             Finally, use the search API for real-time information or data that is unlikely to be found in the other two methods. Print the string '검색엔진'.
-         5. Analyze user input and write description of the data that you need. 
-         6. For efficient searching, add [[ at the beginning and ]] at the end of the content to be searched.
-         7. Make your response easy to use search word for vector db or search engine. Just write words or sentences.'''),
+         4. Analyze user input and write description of the data that you need. 
+         5. For efficient searching, add [[ at the beginning and ]] at the end of the content to be searched.
+         6. Make your response easy to use search word for vector db or search engine. Just write words or sentences.
+         7. Current time : {current_time}
+         지금까지의 채팅 내역입니다. 사용자가 추가적인 정보를 원할 때는 참고하세요. Chat History: {{history}}'''),
         ("human", "{input}"),
         ("ai", "I understand. I'll determine the best course of action."),
         ("human", "Great, what do you think we should do next?"),
-        MessagesPlaceholder(variable_name="agent_scratchpad")
     ])
     
     rewrite_prompt = ChatPromptTemplate.from_messages([
@@ -51,11 +54,12 @@ def initialize_agent_components(llm):
 
     
     # LLM 바인딩을 미리 한 번만 실행
+    base_chain = base_prompt | llm.bind(temperature=0.5)
     rewrite_chain = rewrite_prompt | llm.bind(temperature=0.5)
     generate_chain = generate_prompt | llm.bind(temperature=0.7)
     grade_chain = grade_prompt | llm.bind(temperature = 0.3)
     return {
-        "base_prompt": base_prompt,
+        "base_chain": base_chain,
         "rewrite_chain": rewrite_chain,
         "generate_chain": generate_chain,
         "grade_chain": grade_chain
