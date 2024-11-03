@@ -7,6 +7,9 @@ from AgentState import AgentState
 from typing import List, Dict, Any
 import urllib.request
 from tools import extract_content
+from dotenv import load_dotenv
+import os
+
 # 1. agent node
 def agent(state):
 
@@ -20,10 +23,14 @@ def agent(state):
     
     return {"agent_response": response.content}
 
+# 네이버 뉴스 검색 api를 이용한 뉴스 검색 후 관련된 기사 내용 반환
 def naver_retrieve(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
+    load_dotenv()
+    # API 키 가져오기
+    client_id = os.getenv("CLIENT_ID")
+    client_secret = os.getenv("CLIENT_SECRET")
     print("enter the naver engine")
-    client_id = "VZqunGuAjPeTN1rIL10z"
-    client_secret="XQ6HSwgKi4"
+
     agent_response = state.get('agent_response', '')
     words_for_searching = extract_content(agent_response)
     print(words_for_searching)
@@ -112,8 +119,16 @@ def rewrite(state):
 # 사용자를 위한 답변을 생성하는 agent node
 def generate(state):
     combined_result = state.get('combined_result', [])
-    combined_text = ' '.join(doc.page_content for doc in combined_result)
-    naver_text = state.get('naver_docs')
+    if combined_result is None :
+        combined_text = ''
+    else:
+        combined_text = ' '.join(doc.page_content for doc in combined_result)
+    
+    naver_docs = state.get('naver_docs','')
+    if naver_docs is None:
+        naver_text = ''
+    else:
+        naver_text = naver_docs
     agent_components = state.get('agent_components', None)
     if not agent_components:
         raise ValueError("agent_components not found in state")

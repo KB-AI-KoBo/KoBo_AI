@@ -16,10 +16,10 @@ def initialize_agent_components(llm):
             Use the database when the user inquires about SME (Small and Medium Enterprises) support programs. In this case, print the string '데이터베이스'.
             Finally, use the search API for real-time information or data that is unlikely to be found in the other two methods. Print the string '검색엔진'.
          4. Analyze user input and write description of the data that you need. 
-         5. For efficient searching, add [[ at the beginning and ]] at the end of the content to be searched.
-         6. Make your response easy to use search word for vector db or search engine. Just write words or sentences.
+         5. Alert: For efficient searching, add [[ at the beginning and ]] at the end of the content to be searched. And when you use search engine, 검색엔진에 적합한 하나의 검색어만 작성해줘. 하나는 무조건 작성해야 돼.
+         6. 당신의 답변을 짧고 간결하게 작성해 retriever 사용에 적합하게 하고, 한국어를 사용하세요.
          7. Current time : {current_time}
-         지금까지의 채팅 내역입니다. 사용자가 추가적인 정보를 원할 때는 참고하세요. Chat History: {{history}}'''),
+         지금까지의 채팅 내역입니다. 사용자가 이전 질문에 대해 추가적인 정보를 원할 때는 참고하세요. Chat History: {{history}}'''),
         ("human", "{input}"),
         ("ai", "I understand. I'll determine the best course of action."),
         ("human", "Great, what do you think we should do next?"),
@@ -28,7 +28,8 @@ def initialize_agent_components(llm):
     rewrite_prompt = ChatPromptTemplate.from_messages([
         ("system", '''You are an AI assistant that rewrites question from the user for AI agent to make the answer more accurate and perfect.
                       Write the subtle question based on given information.
-                      And please write description about data that agent needs to find.'''),
+                      And please write description about data that agent needs to find.
+                      '''),
         ("human", "Please rewrite the following information: {context}, question:{input}, AI answer:{answer}")
     ])
     
@@ -36,7 +37,8 @@ def initialize_agent_components(llm):
         ("system", '''You are an AI assistant that generates the answer based on given context. 
                       Please write in Korean. Answer logically and avoid writing false information'''),
         ("human", '''Using the following information, generate a comprehensive response on the question.
-                    구체적인 수치를 인용하며 서술해라. 지원 사업 데이터나 뉴스에 링크가 있다면 참조해줘.
+                    When you refer to news, please indicate source link.
+                    구체적인 수치를 인용하며 서술해라. 지원 사업 데이터에 링크가 있다면 정확히 참조해줘.
                     기록번호나 날짜는 제외해서 서술해도 돼.
                 information:{context}, question: {query}, agent_response : {agent_response}''')
     ])
@@ -54,9 +56,9 @@ def initialize_agent_components(llm):
 
     
     # LLM 바인딩을 미리 한 번만 실행
-    base_chain = base_prompt | llm.bind(temperature=0.5)
-    rewrite_chain = rewrite_prompt | llm.bind(temperature=0.5)
-    generate_chain = generate_prompt | llm.bind(temperature=0.7)
+    base_chain = base_prompt | llm.bind(temperature=0.4)
+    rewrite_chain = rewrite_prompt | llm.bind(temperature=0.3)
+    generate_chain = generate_prompt | llm.bind(temperature=0.6)
     grade_chain = grade_prompt | llm.bind(temperature = 0.3)
     return {
         "base_chain": base_chain,

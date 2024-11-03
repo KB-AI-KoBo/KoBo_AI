@@ -1,3 +1,5 @@
+# 테스트용 코드, 추후 삭제 요망
+
 import os
 import urllib.request
 from langchain.prompts import ChatPromptTemplate

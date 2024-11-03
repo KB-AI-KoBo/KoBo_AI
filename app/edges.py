@@ -15,7 +15,7 @@ def which_retrieved(state: AgentState) -> str:
 
 
 # generated_answer를 다시 작성할지 질문과 답변을 기반으로 판단
-def grade_documents(state):
+def grade_documents(state: AgentState) -> str:
     
     print("---CHECK ANSWER---")
     
@@ -54,9 +54,12 @@ def grade_documents(state):
 
     print(f"---DECISION: DOCS {'GOOD' if grade == 'yes' else 'NOT ENOUGH'}---")
 
-    # history 저장 안 됨. trouble shooting 필요. 다른 자료형 이용하거나, search 통해 원인 정확히 파악할 것.
     if grade == 'yes' :
-        state["history"] = state.get('history',[]).append({"query":question , "answer": generated_answer})
+        history = state.get('history', [])
+        history.append(question+generated_answer)
+        state["history"] = history
+        print(history)
+
     return grade
 
 
