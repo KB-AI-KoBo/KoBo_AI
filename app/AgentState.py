@@ -23,4 +23,4 @@ class AgentState(TypedDict):
     generated_answer: str
     llm : ChatOpenAI
     agent_components: Dict[str, Any]
-    history : List[str]
+    chat_history : List[str]

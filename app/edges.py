@@ -54,11 +54,7 @@ def grade_documents(state: AgentState) -> str:
 
     print(f"---DECISION: DOCS {'GOOD' if grade == 'yes' else 'NOT ENOUGH'}---")
 
-    if grade == 'yes' :
-        history = state.get('history', [])
-        history.append(question+generated_answer)
-        state["history"] = history
-        print(history)
+
 
     return grade
 

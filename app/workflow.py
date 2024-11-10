@@ -5,7 +5,7 @@ from edges import which_retrieved, grade_documents, should_continue
 
 # workflow function for LangGraph
 # we need these variables to run this function.
-def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, llm, agent_components):
+def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, llm, agent_components, chat_history):
     
     # define StateGraph
     workflow = StateGraph(AgentState)
@@ -70,7 +70,7 @@ def run_workflow(input_query, pdf_path, openai_api_key, pdf_db, supporting_db, l
         "supporting_db": supporting_db,
         "llm" : llm,
         "agent_components": agent_components,
-        "history": []
+        "chat_history": chat_history
     }
     result = app.invoke(initial_state)
     return result

@@ -13,13 +13,13 @@ import os
 # 1. agent node
 def agent(state):
 
+    chat_history = state.get('chat_history', [])
     agent_components = state.get('agent_components', None)
-    history = state.get('history', [])
     if not agent_components:
         raise ValueError("agent_components not found in state")
 
     base_chain = agent_components["base_chain"]
-    response = base_chain.invoke({"input":state['input'], "history": history})
+    response = base_chain.invoke({"input":state['input'], "chat_history": chat_history})
     
     return {"agent_response": response.content}
 

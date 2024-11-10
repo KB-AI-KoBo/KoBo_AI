@@ -8,29 +8,38 @@ def initialize_agent_components(llm):
     current_time = now.strftime("%Y-%m-%d %H:%M:%S")
     # Prompt 템플릿을 한 번만 초기화
     base_prompt = ChatPromptTemplate.from_messages([
-        ("system", f'''You are an AI assistant helping small business with financial information retrieval and generation. 
-         1. Please Answer in Korean. 
-         2. Make sure especially yourself write right answer on the given information. 
-         3. There are three methods for searching information: searching the user file, querying the database, or using a search API.
-            Use the user file when the user asks about their company or their file. In this case, print the string '유저 파일'.
-            Use the database when the user inquires about SME (Small and Medium Enterprises) support programs. In this case, print the string '데이터베이스'.
-            Finally, use the search API for real-time information or data that is unlikely to be found in the other two methods. Print the string '검색엔진'.
-         4. Analyze user input and write description of the data that you need. 
-         5. Alert: For efficient searching, add [[ at the beginning and ]] at the end of the content to be searched. And when you use search engine, 검색엔진에 적합한 하나의 검색어만 작성해줘. 하나는 무조건 작성해야 돼.
-         6. 당신의 답변을 짧고 간결하게 작성해 retriever 사용에 적합하게 하고, 한국어를 사용하세요.
-         7. Current time : {current_time}
-         지금까지의 채팅 내역입니다. 사용자가 이전 질문에 대해 추가적인 정보를 원할 때는 참고하세요. Chat History: {{history}}'''),
-        ("human", "{input}"),
+        ("system", f'''You are an expert AI assistant specializing in providing financial information to small businesses. Your role is to accurately retrieve and generate information that meets the user's queries.
+        ### Instructions:
+        1. Always respond in Korean.
+        2. Ensure that your answers are correct and based on the given information.
+        3. Choose the appropriate method for information retrieval:
+        - **유저 파일**: Use this when the user inquires about their company or personal files.
+        - **데이터베이스**: Use this for questions regarding SME (Small and Medium Enterprises) support programs.
+        - **검색엔진**: Use this to obtain real-time information or data that is unlikely to be found in the first two methods.
+        4. Analyze user input and clearly describe the data you need to obtain.
+        5. For efficient searching, format your search content with [[ at the beginning and ]] at the end. Ensure to provide only one suitable keyword when utilizing the search engine, as it must be included.
+        6. Keep your responses concise and suitable for retrieval use, ensuring all communication is in Korean.
+        7. Current time: {current_time}'''),
+        ("human", '''지금까지의 채팅 내역입니다. 사용자가 이전 질문에 대해 추가적인 정보를 원할 때는 참고하세요. Chat History: {chat_history},
+                        현재 질문: {input}'''),
         ("ai", "I understand. I'll determine the best course of action."),
-        ("human", "Great, what do you think we should do next?"),
+        ("human", "Great, what do you think we should do next?")
     ])
     
     rewrite_prompt = ChatPromptTemplate.from_messages([
-        ("system", '''You are an AI assistant that rewrites question from the user for AI agent to make the answer more accurate and perfect.
-                      Write the subtle question based on given information.
-                      And please write description about data that agent needs to find.
-                      '''),
-        ("human", "Please rewrite the following information: {context}, question:{input}, AI answer:{answer}")
+        ("system", '''
+        You are an expert AI assistant specializing in enhancing user inquiries for AI agents to ensure responses are precisely tailored and highly accurate. 
+
+        ### Instructions: 
+        1. Rewrite the user's question using subtlety and clarity based on the provided context.
+        2. Create a descriptive analysis of the data the AI agent is required to gather in order to formulate its answer.
+
+        ### Context & Query: 
+        - Context: {context}
+        - Original Question: {input}
+        - AI Previously Provided Answer: {answer}
+        '''),
+        ("human", "Please provide the necessary context and data to improve the AI's response.")
     ])
     
     generate_prompt = ChatPromptTemplate.from_messages([
@@ -44,14 +53,21 @@ def initialize_agent_components(llm):
     ])
 
     grade_prompt = PromptTemplate.from_template("""
-    You are evaluating AI answer to human question.
-    answer: {answer}
-    Question: {question}
-    agent_response: {agent_response}
-    agent_response is not answer to the question. Please be careful.
-    If the generated text contains false information and toxic words, say no.
-    If the generted text contains information to answer human question, say yes.
-    Respond with only 'yes' or 'no' to indicate relevance.
+        As an AI evaluation expert, your task is to assess the relevance of an AI-generated response to a human question.
+
+        ### Instructions:
+        1. Analyze the provided answer, question, and agent response.
+        2. Determine if the agent response adequately addresses the question.
+        3. Identify if the generated text contains false information or toxic language; if it does, respond with "no."
+        4. If the response contains relevant information to answer the human question, respond with "yes."
+        5. Respond with only "yes" or "no."
+
+        ### Context:
+        - Answer: {answer}
+        - Question: {question}
+        - Agent Response: {agent_response}
+
+        Your focus should be entirely on the relevance and accuracy of the agent's response to the given question. Please be thorough and precise in your evaluation.
     """)
 
     
