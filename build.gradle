@@ -1,0 +1,97 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.6.8'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'com.kb'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot Starter dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security Starter
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA Starter
+    implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Web Starter
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc' // Spring JDBC Starter
+
+    // Jakarta EE로 변경된 의존성
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
+    implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0' // Servlet API
+
+    // Development tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
+
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.mockito:mockito-core'
+
+    // AWS SDK Dependency
+    implementation 'com.amazonaws:aws-java-sdk-secretsmanager:1.12.213'
+
+    // JDBC Dependency
+    implementation 'mysql:mysql-connector-java:8.0.28'
+
+    // javax
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
+    // hibernate-validator
+    implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
+
+    // Lombok 관련 의존성
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    // Jackson Datatype JSR-310 모듈 추가
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
+
+    // log
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
+
+    // Swagger 2 의존성
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+    implementation 'org.springdoc:springdoc-openapi-webmvc-core:1.6.15'
+
+    // JWT 의존성 추가
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    // .env 파일을 읽고 환경 변수로 로드
+    implementation 'io.github.cdimascio:dotenv-java:2.2.0'
+
+    // webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // json
+    implementation 'org.json:json:20211205'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+}
+
+
+sourceSets {
+    main {
+        java {
+            // 테스트 폴더를 제외
+            exclude '**/test/**'
+        }
+    }
+}
+
+tasks.named('test') {
+    enabled = false
+    useJUnitPlatform()
+}

@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.6889a4ff.css",
+    "main.js": "/static/js/main.c7482ccb.js",
+    "static/media/KBFGText-Light_1_.ttf": "/static/media/KBFGText-Light_1_.4b313d0c925f9e6315bd.ttf",
+    "static/media/KBFGDisplay-Light_1_.ttf": "/static/media/KBFGDisplay-Light_1_.1ee34f1ffb00f8ff5613.ttf",
+    "static/media/KBFGDisplay-Medium_1_.ttf": "/static/media/KBFGDisplay-Medium_1_.a7456358526304b89b4b.ttf",
+    "static/media/kolly.png": "/static/media/kolly.15fa6c38ff12a1b5bbc1.png",
+    "index.html": "/index.html",
+    "main.6889a4ff.css.map": "/static/css/main.6889a4ff.css.map",
+    "main.c7482ccb.js.map": "/static/js/main.c7482ccb.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6889a4ff.css",
+    "static/js/main.c7482ccb.js"
+  ]
+}

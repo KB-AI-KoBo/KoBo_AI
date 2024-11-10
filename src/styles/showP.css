@@ -1,0 +1,85 @@
+.program-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.program-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    width: calc(25% - 40px);
+    /* 4열 레이아웃 */
+}
+
+@media (max-width: 1024px) {
+    .program-card {
+        width: calc(50% - 40px);
+        /* 작은 화면에서 2열 레이아웃 */
+    }
+}
+
+@media (max-width: 768px) {
+    .program-card {
+        width: 100%;
+        /* 더 작은 화면에서 1열 레이아웃 */
+    }
+}
+
+.program-card h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.program-card p {
+    margin: 5px 0;
+}
+
+.program-card a {
+    color: blue;
+    text-decoration: none;
+}
+
+.pagination {
+    margin-top: 10px;
+    /* 위쪽 마진 조정 */
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    /* 버튼 사이 간격 축소 */
+}
+
+.pagination button {
+    padding: 5px 10px;
+    /* 패딩 축소 */
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.9em;
+    /* 글씨 크기 조정 */
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.page-numbers {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    /* 간격 축소 */
+}
+
+.page-numbers button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.page-numbers button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

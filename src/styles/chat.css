@@ -1,0 +1,161 @@
+body {
+    background-color: #ffffff;
+    justify-content: center;
+    align-items: flex-end;
+    height: 100vh;
+    margin: 0;
+    font-family: 'textM', sans-serif;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 100%;
+    background-color: #ffffff;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages-container {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    margin-bottom: 60px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+    /* 하단 패딩을 줄여서 말풍선과 입력창 사이의 거리 줄이기 */
+    position: relative;
+    top: -80px;
+    /* 전체 컨테이너를 위로 이동 */
+}
+
+.message {
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    max-width: 70%;
+    word-wrap: break-word;
+    color: #333;
+    position: relative;
+    display: inline-block;
+}
+
+.user-message {
+    background-color: #faf7d9;
+    align-self: flex-end;
+    margin-right: 30px;
+    text-align: right;
+}
+
+.user-message::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-left-color: #faf7d9;
+    border-right: 0;
+    border-bottom: 0;
+    margin-top: -5px;
+}
+
+.bot-message {
+    background-color: #e0e0e0;
+    align-self: flex-start;
+    margin-left: 20px;
+    text-align: left;
+}
+
+.bot-message::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-right-color: #e0e0e0;
+    border-left: 0;
+    border-bottom: 0;
+    margin-top: -5px;
+}
+
+.chat-container {
+    background-color: #faf7d9;
+    border-radius: 40px;
+    outline: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    width: 100%;
+    max-width: 800px;
+    position: fixed;
+    bottom: 20px;
+    overflow-y: auto;
+}
+
+.chat-container input[type="file"] {
+    display: none;
+}
+
+.attach-icon {
+    color: #60584c;
+    background-color: #faf7d9;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 2px 0 0 14px;
+}
+
+.chat-input {
+    flex: 1;
+    background: #faf7d9;
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    color: #60584c;
+    padding: 10px 8px;
+    margin: 0 10px;
+    resize: none;
+    overflow: hidden;
+    min-height: 40px;
+    max-height: 100px;
+}
+
+.send-button {
+    background-color: #ffcc00;
+    color: #60584c;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding-top: 4px;
+}
+
+.send-button:hover {
+    background-color: #ffcc0065;
+}
+
+.file-link {
+    color: #0000EE;
+    text-decoration: underline;
+    display: inline-block;
+    margin-top: 5px;
+}
