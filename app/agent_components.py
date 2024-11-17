@@ -53,21 +53,27 @@ def initialize_agent_components(llm):
     ])
 
     grade_prompt = PromptTemplate.from_template("""
-        As an AI evaluation expert, your task is to assess the relevance of an AI-generated response to a human question.
+        As an AI evaluation expert, your task is to assess if an AI-generated response meaningfully answers a human question.
 
         ### Instructions:
-        1. Analyze the provided answer, question, and agent response.
-        2. Determine if the agent response adequately addresses the question.
-        3. Identify if the generated text contains false information or toxic language; if it does, respond with "no."
-        4. If the response contains relevant information to answer the human question, respond with "yes."
-        5. Respond with only "yes" or "no."
+        1. Review the question and agent response carefully
+        2. Evaluate if the response provides useful, relevant information that addresses the core of the question
+        3. Respond with "yes" if:
+        - The response contains information that helps answer the question
+        - The response is on-topic and related to what was asked
+        - The response makes a genuine attempt to be helpful
+        
+        4. Respond with "no" only if:
+        - The response is completely unrelated to the question
+        - The response contains demonstrably false information
+        - The response is harmful or inappropriate
 
         ### Context:
-        - Answer: {answer}
         - Question: {question}
         - Agent Response: {agent_response}
+        - Answer: {answer}
 
-        Your focus should be entirely on the relevance and accuracy of the agent's response to the given question. Please be thorough and precise in your evaluation.
+        Provide only "yes" or "no" as your response.
     """)
 
     

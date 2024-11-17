@@ -1,7 +1,7 @@
 from workflow import run_workflow, extract_final_response
 from dotenv import load_dotenv
 import os
-from build_vector_db import public_to_vector_db
+from build_vector_db import public_to_vector_db, pdf_to_vector_db
 from agent_components import initialize_agent_components
 from langchain_openai import ChatOpenAI
 from ExtractLink import ExtractLink
@@ -18,10 +18,11 @@ if __name__ == "__main__":
     llm = ChatOpenAI(temperature=0.4, model='gpt-4o',openai_api_key= openai_api_key)
     agent_components = initialize_agent_components(llm)
     chat_history = []
+    pdf_path = 'c:/Users/USER/Downloads/[삼성전자]분기보고서(2024.05.16).pdf'
+    pdf_db = pdf_to_vector_db(pdf_path)
     while True:        
         query = input("질문을 입력하세요 (종료하려면 'exit' 입력): ")
-        pdf_path = ''
-        pdf_db = None
+
         # exit 입력시 반복문 탈출
         if query.lower() == 'exit':
             break

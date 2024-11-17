@@ -1,17 +1,37 @@
-import fitz
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.csv_loader import CSVLoader
+from llama_parse import LlamaParse
+from llama_index.core import SimpleDirectoryReader
+
+from dotenv import load_dotenv
+import os
 
 # user가 업로드한 pdf 파일을 vector database에 업로드
 def pdf_to_vector_db(pdf_path):   
     try:
+        load_dotenv()
+        # API 키 가져오기
+        llamaparseKey = os.getenv('LLAMA_PARSE_KEY')
         print("Starting PDF processing")
-        
-        doc = fitz.open(pdf_path) # pdf 로드
+        parser = LlamaParse(
+            api_key= llamaparseKey,  
+            result_type="markdown",  # "markdown" and "text" are available
+            num_workers=4,  # if multiple files passed, split in `num_workers` API calls
+            verbose=True,
+            language="ko"
+            )
+        file_extractor = {".pdf": parser}
+
+        # LlamaParse로 파일 파싱
+        documents = SimpleDirectoryReader(
+            input_files=[pdf_path],
+            file_extractor=file_extractor,
+        ).load_data()
+        # docs = [doc.to_langchain_format() for doc in documents]
         text = ""
-        for page in doc:          # 각 페이지에 있는 텍스트 가져와서 저장
+        for page in documents:          # 각 페이지에 있는 텍스트 가져와서 저장
             text += page.get_text()
         
         # 텍스트 정규화 및 인코딩 처리
@@ -22,7 +42,7 @@ def pdf_to_vector_db(pdf_path):
         # 텍스트 분할기 사용
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
-            chunk_overlap=200,
+            chunk_overlap=100,
             length_function=len,
             separators=["\n\n", "\n", " ", ""]
         )
