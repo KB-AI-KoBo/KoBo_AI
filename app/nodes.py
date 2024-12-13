@@ -56,7 +56,7 @@ def input_retrieve(state: AgentState) -> Dict[str, List[Dict[str, Any]]]:
         raise TypeError(f"Expected state to be a dict or have a 'get' method, but got {type(state)}")  
 
     # vectorstore 가져오기
-    vectorstore = state.get('pdf_db', None)
+    vectorstore = state.get('document_db', None)
 
     # vectorstore가 None인 경우 작업 스킵
     if vectorstore is None:

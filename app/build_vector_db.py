@@ -8,54 +8,72 @@ from llama_index.core import SimpleDirectoryReader
 from dotenv import load_dotenv
 import os
 
-# user가 업로드한 pdf 파일을 vector database에 업로드
-def pdf_to_vector_db(pdf_path):   
+import os
+from dotenv import load_dotenv
+from llama_index import SimpleDirectoryReader
+from llama_index.llm_predictor.llama_parse import LlamaParse
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+
+def document_to_vector_db(file_path):
     try:
         load_dotenv()
-        # API 키 가져오기
-        llamaparseKey = os.getenv('LLAMA_PARSE_KEY')
-        print("Starting PDF processing")
+        llamaparse_key = os.getenv('LLAMA_PARSE_KEY')
+
+        print("Starting document processing")
+
+        # LlamaParse 설정
         parser = LlamaParse(
-            api_key= llamaparseKey,  
-            result_type="markdown",  # "markdown" and "text" are available
-            num_workers=4,  # if multiple files passed, split in `num_workers` API calls
+            api_key=llamaparse_key,
+            result_type="markdown",  # "markdown" 또는 "text" 사용 가능
+            num_workers=4,
             verbose=True,
             language="ko"
-            )
-        file_extractor = {".pdf": parser}
+        )
+        file_extractor = {
+            ".pdf": parser,
+            ".pptx": parser,
+            ".docx": parser,
+            ".xlsx": parser
+        }
 
-        # LlamaParse로 파일 파싱
+        # 파일 파싱
         documents = SimpleDirectoryReader(
-            input_files=[pdf_path],
+            input_files=[file_path],
             file_extractor=file_extractor,
         ).load_data()
-        # docs = [doc.to_langchain_format() for doc in documents]
+
+        # 텍스트 추출
         text = ""
-        for page in documents:          # 각 페이지에 있는 텍스트 가져와서 저장
-            text += page.get_text()
-        
-        # 텍스트 정규화 및 인코딩 처리
+        for doc in documents:
+            text += doc.get_text()
+
+        # 텍스트 정규화
         text = text.replace('\n', ' ').replace('\r', '')
         text = ' '.join(text.split())  # 연속된 공백 제거
         text = text.encode('utf-8', errors='ignore').decode('utf-8')
-        
-        # 텍스트 분할기 사용
+
+        # 텍스트 분할
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=100,
             length_function=len,
             separators=["\n\n", "\n", " ", ""]
         )
-        texts = text_splitter.split_text(text) # 청크사이즈로 나눈 텍스트 저장
-        
+        texts = text_splitter.split_text(text)
+
         # FAISS 벡터 저장소 생성
         embeddings = OpenAIEmbeddings()
-        pdf_db = FAISS.from_texts(texts, embeddings)
-        print("PDF processing completed")
-        return pdf_db
+        vector_db = FAISS.from_texts(texts, embeddings)
+
+        print("Document processing completed")
+        return vector_db
+
     except Exception as e:
-        print(f"Error in input retrieval: {e}")
+        print(f"Error in document processing: {e}")
         return None
+
     
 def public_to_vector_db():
 

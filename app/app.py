@@ -4,7 +4,7 @@ import os
 from langchain_openai import ChatOpenAI
 from agent_components import initialize_agent_components
 import requests
-from build_vector_db import pdf_to_vector_db, public_to_vector_db
+from build_vector_db import document_to_vector_db, public_to_vector_db
 from ExtractLink import ExtractLink
 from workflow import run_workflow, extract_final_response
 from flask_cors import CORS
@@ -43,26 +43,26 @@ def process_request():
 
         print(f"질문 받아오기 성공: {query}")
 
-        pdf_path = None
-        pdf_db = None
+        doc_path = None
+        document_db = None
 
         # 사용자 문서가 있을 때
         if documentId:
             document_response = requests.get(f'{BACKEND_URL}/api/documents/{documentId}', timeout=10)
             document_response.raise_for_status()
             document = document_response.json()
-            pdf_path = document.get('document')
-            print(f"사용자 문서 받아오기 성공: {pdf_path}")
+            doc_path = document.get('document')
+            print(f"사용자 문서 받아오기 성공: {doc_path}")
 
             # PDF를 벡터 데이터베이스로 변환
-            pdf_db = pdf_to_vector_db(pdf_path)
-            print("PDF converted to vector database")
+            document_db = document_to_vector_db(doc_path)
+            print("document converted to vector database")
         else:
             print("사용자 문서가 없는 질문입니다.")
 
 
         # 워크플로우 실행
-        result = run_workflow(query, pdf_path, openai_api_key, pdf_db, supporting_db, llm, agent_components, chat_history)
+        result = run_workflow(query, doc_path, openai_api_key, document_db, supporting_db, llm, agent_components, chat_history)
         print("Workflow executed")
         # 최종 응답 추출
         answer = extract_final_response(result)

@@ -18,15 +18,15 @@ if __name__ == "__main__":
     llm = ChatOpenAI(temperature=0.4, model='gpt-4o',openai_api_key= openai_api_key)
     agent_components = initialize_agent_components(llm)
     chat_history = []
-    pdf_path = 'c:/Users/USER/Downloads/[삼성전자]분기보고서(2024.05.16).pdf'
-    pdf_db = pdf_to_vector_db(pdf_path)
+    doc_path = 'c:/Users/USER/Downloads/[삼성전자]분기보고서(2024.05.16).pdf'
+    document_db = pdf_to_vector_db(doc_path)
     while True:        
         query = input("질문을 입력하세요 (종료하려면 'exit' 입력): ")
 
         # exit 입력시 반복문 탈출
         if query.lower() == 'exit':
             break
-        result = run_workflow(query, pdf_path, openai_api_key, pdf_db, supporting_db, llm, agent_components, chat_history)
+        result = run_workflow(query, doc_path, openai_api_key, document_db, supporting_db, llm, agent_components, chat_history)
         # LangGraph의 마지막 답변을 추출
         response = extract_final_response(result)
         print("답변:", response)
